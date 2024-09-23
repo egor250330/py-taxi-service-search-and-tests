@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from taxi.models import Manufacturer, Car, Driver
+from taxi.models import Manufacturer, Driver
 
 
 class ManufacturerModelTest(TestCase):
