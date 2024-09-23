@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from taxi.models import Manufacturer, Driver
+from taxi.models import Manufacturer, Car, Driver
 
 
 class ManufacturerModelTest(TestCase):
@@ -36,3 +36,18 @@ class DriverModelTest(TestCase):
     def test_get_root_address(self):
         driver = Driver.objects.get(id=1)
         self.assertEqual(driver.get_absolute_url(), "/drivers/1/")
+
+
+class CarModelTest(TestCase):
+    def test_car_output(self):
+        test_manufacture = Manufacturer.objects.create(
+            name="Test manufacture",
+            country="USA"
+        )
+
+        car = Car.objects.create(
+            model="M5",
+            manufacturer=test_manufacture,
+        )
+
+        self.assertEqual(str(car), car.model)
