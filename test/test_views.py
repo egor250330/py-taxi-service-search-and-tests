@@ -26,7 +26,7 @@ class IndexTest(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
         )
         self.client.force_login(self.user)
@@ -41,40 +41,40 @@ class IndexTest(TestCase):
 class CarTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
         )
         self.client.force_login(self.user)
 
         self.manufacturer = Manufacturer.objects.create(
-            name="Test manufacture", country="USA"
+            name="Manufacture Test", country="China"
         )
 
     def test_car_creation(self):
         self.client.post(
             reverse("taxi:car-create"),
             {
-                "model": "M5",
+                "model": "X3",
                 "drivers": self.user.id,
                 "manufacturer": self.manufacturer.id
             }
         )
-        self.assertEqual(Car.objects.last().model, "M5")
+        self.assertEqual(Car.objects.last().model, "X3")
 
     def test_car_detail(self):
         self.car = Car.objects.create(
-            model="M5",
+            model="X3",
             manufacturer=self.manufacturer
         )
 
         response = self.client.get(
             reverse("taxi:car-detail", args=[self.car.id])
         )
-        self.assertContains(response, "M5")
+        self.assertContains(response, "X3")
 
     def test_car_delete(self):
         self.car = Car.objects.create(
-            model="M5",
+            model="X3",
             manufacturer=self.manufacturer
         )
 

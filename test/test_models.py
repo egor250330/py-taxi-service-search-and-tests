@@ -3,24 +3,11 @@ from django.test import TestCase
 from taxi.models import Manufacturer, Car, Driver
 
 
-class ManufacturerModelTest(TestCase):
-    def test_manufacturer_output(self):
-        test_manufacture = Manufacturer.objects.create(
-            name="Test manufacture",
-            country="USA"
-        )
-
-        self.assertEqual(str(test_manufacture),
-                         f"{test_manufacture.name} "
-                         f"{test_manufacture.country}"
-                         )
-
-
 class DriverModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         Driver.objects.create_user(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
             first_name="Name",
             last_name="Surname"
@@ -38,15 +25,28 @@ class DriverModelTest(TestCase):
         self.assertEqual(driver.get_absolute_url(), "/drivers/1/")
 
 
+class ManufacturerModelTest(TestCase):
+    def test_manufacturer_output(self):
+        test_manufacture = Manufacturer.objects.create(
+            name="Manufacture Test",
+            country="China"
+        )
+
+        self.assertEqual(str(test_manufacture),
+                         f"{test_manufacture.name} "
+                         f"{test_manufacture.country}"
+                         )
+
+
 class CarModelTest(TestCase):
     def test_car_output(self):
         test_manufacture = Manufacturer.objects.create(
-            name="Test manufacture",
-            country="USA"
+            name="Manufacture Test",
+            country="China"
         )
 
         car = Car.objects.create(
-            model="M5",
+            model="X3",
             manufacturer=test_manufacture,
         )
 

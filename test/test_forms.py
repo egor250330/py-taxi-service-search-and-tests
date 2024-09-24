@@ -14,18 +14,18 @@ from taxi.models import Manufacturer
 class TestCarForms(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
         )
         self.client.force_login(self.user)
 
         self.manufacturer = Manufacturer.objects.create(
-            name="Test manufacture", country="USA"
+            name="Manufacture Test", country="China"
         )
 
     def test_car_search_form_with_arg(self):
         form_data = {
-            "model": "M5",
+            "model": "X3",
         }
         form = CarModelSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -41,18 +41,18 @@ class TestCarForms(TestCase):
 class TestManufacturerForms(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
         )
         self.client.force_login(self.user)
 
         self.manufacturer = Manufacturer.objects.create(
-            name="Test manufacture", country="USA"
+            name="Manufacture Test", country="China"
         )
 
     def test_manufacturer_search_form_with_arg(self):
         form_data = {
-            "name": "Test manufacture",
+            "name": "Manufacture Test",
         }
         form = ManufacturerNameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -68,13 +68,13 @@ class TestManufacturerForms(TestCase):
 class TestDriverForms(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="new_driver",
+            username="new_driver1",
             password="root1234",
         )
         self.client.force_login(self.user)
 
         self.manufacturer = Manufacturer.objects.create(
-            name="Test manufacture", country="USA"
+            name="Manufacture Test", country="China"
         )
 
     def test_driver_form(self):
@@ -94,6 +94,11 @@ class TestDriverForms(TestCase):
         form = DriverUsernameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
 
+    def test_update_license_form_incorrect_num(self):
+        form_data = {"license_number": "HrN8473"}
+        form = DriverLicenseUpdateForm(form_data)
+        self.assertEqual(form.is_valid(), False)
+
     def test_driver_search_form_without_arg(self):
         form_data = {
             "username": "",
@@ -105,8 +110,3 @@ class TestDriverForms(TestCase):
         form_data = {"license_number": "HRN84739"}
         form = DriverLicenseUpdateForm(form_data)
         self.assertTrue(form.is_valid())
-
-    def test_update_license_form_incorrect_num(self):
-        form_data = {"license_number": "HrN8473"}
-        form = DriverLicenseUpdateForm(form_data)
-        self.assertEqual(form.is_valid(), False)
