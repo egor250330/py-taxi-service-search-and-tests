@@ -63,7 +63,9 @@ class TestManufacturerForms(TestCase):
         form = ManufacturerNameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
 
-        manufacturers = Manufacturer.objects.filter(name__icontains=form.cleaned_data["name"])
+        manufacturers = Manufacturer.objects.filter(
+            name__icontains=form.cleaned_data["name"]
+        )
 
         self.assertIn(self.manufacturer1, manufacturers)
         self.assertIn(self.manufacturer3, manufacturers)
@@ -77,7 +79,9 @@ class TestManufacturerForms(TestCase):
         form = ManufacturerNameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
 
-        manufacturers = Manufacturer.objects.filter(name__icontains=form.cleaned_data["name"])
+        manufacturers = Manufacturer.objects.filter(
+            name__icontains=form.cleaned_data["name"]
+        )
 
         self.assertIn(self.manufacturer1, manufacturers)
         self.assertIn(self.manufacturer2, manufacturers)
