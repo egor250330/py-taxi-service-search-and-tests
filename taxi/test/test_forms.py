@@ -8,7 +8,7 @@ from taxi.forms import (
     DriverUsernameSearchForm,
     DriverCreationForm
 )
-from taxi.models import Manufacturer
+from taxi.models import Manufacturer, Driver
 
 
 class TestCarForms(TestCase):
@@ -46,16 +46,29 @@ class TestManufacturerForms(TestCase):
         )
         self.client.force_login(self.user)
 
-        self.manufacturer = Manufacturer.objects.create(
+        self.manufacturer1 = Manufacturer.objects.create(
             name="Manufacture Test", country="China"
+        )
+        self.manufacturer2 = Manufacturer.objects.create(
+            name="Another Manufacturer", country="USA"
+        )
+        self.manufacturer3 = Manufacturer.objects.create(
+            name="Test Company", country="Germany"
         )
 
     def test_manufacturer_search_form_with_arg(self):
         form_data = {
-            "name": "Manufacture Test",
+            "name": "Test",
         }
         form = ManufacturerNameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
+
+        manufacturers = Manufacturer.objects.filter(name__icontains=form.cleaned_data["name"])
+
+        self.assertIn(self.manufacturer1, manufacturers)
+        self.assertIn(self.manufacturer3, manufacturers)
+
+        self.assertNotIn(self.manufacturer2, manufacturers)
 
     def test_manufacturer_search_form_without_arg(self):
         form_data = {
@@ -63,6 +76,12 @@ class TestManufacturerForms(TestCase):
         }
         form = ManufacturerNameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
+
+        manufacturers = Manufacturer.objects.filter(name__icontains=form.cleaned_data["name"])
+
+        self.assertIn(self.manufacturer1, manufacturers)
+        self.assertIn(self.manufacturer2, manufacturers)
+        self.assertIn(self.manufacturer3, manufacturers)
 
 
 class TestDriverForms(TestCase):
@@ -77,6 +96,12 @@ class TestDriverForms(TestCase):
             name="Manufacture Test", country="China"
         )
 
+        self.driver = Driver.objects.create(
+            username="existing_driver",
+            license_number="ABC12345",
+            password="password123"
+        )
+
     def test_driver_form(self):
         form_data = {
             "username": "another_driver",
@@ -84,20 +109,22 @@ class TestDriverForms(TestCase):
             "password1": "Root1234",
             "password2": "Root1234"
         }
-        form = DriverCreationForm(form_data)
+        form = DriverCreationForm(data=form_data)
         self.assertTrue(form.is_valid())
+        driver = form.save()
+        self.assertEqual(driver.username, "another_driver")
 
     def test_driver_search_form_with_arg(self):
         form_data = {
-            "username": "new_driver",
+            "username": "existing_driver",
         }
         form = DriverUsernameSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
 
     def test_update_license_form_incorrect_num(self):
         form_data = {"license_number": "HrN8473"}
-        form = DriverLicenseUpdateForm(form_data)
-        self.assertEqual(form.is_valid(), False)
+        form = DriverLicenseUpdateForm(data=form_data, instance=self.driver)
+        self.assertFalse(form.is_valid())
 
     def test_driver_search_form_without_arg(self):
         form_data = {
@@ -108,5 +135,8 @@ class TestDriverForms(TestCase):
 
     def test_update_license_form_correct_num(self):
         form_data = {"license_number": "HRN84739"}
-        form = DriverLicenseUpdateForm(form_data)
+        form = DriverLicenseUpdateForm(data=form_data, instance=self.driver)
         self.assertTrue(form.is_valid())
+        form.save()
+        self.driver.refresh_from_db()
+        self.assertEqual(self.driver.license_number, "HRN84739")
