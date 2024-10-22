@@ -63,7 +63,7 @@ ROOT_URLCONF = "taxi_service.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'taxi/templates/includes')],
+        "DIRS": [os.path.join(BASE_DIR, "taxi/templates/includes")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
