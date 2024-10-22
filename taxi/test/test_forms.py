@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 
 from taxi.forms import (
     CarModelSearchForm,
@@ -57,35 +58,27 @@ class TestManufacturerForms(TestCase):
         )
 
     def test_manufacturer_search_form_with_arg(self):
-        form_data = {
-            "name": "Test",
-        }
-        form = ManufacturerNameSearchForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        url = reverse("taxi:manufacturer-list")
 
-        manufacturers = Manufacturer.objects.filter(
-            name__icontains=form.cleaned_data["name"]
-        )
+        response = self.client.get(url, {"name": "Test"})
 
-        self.assertIn(self.manufacturer1, manufacturers)
-        self.assertIn(self.manufacturer3, manufacturers)
+        self.assertEquals(response.status_code, 200)
 
-        self.assertNotIn(self.manufacturer2, manufacturers)
+        self.assertNotContains(response, "Another Manufacturer")
+
+        self.assertContains(response, "Manufacture Test")
+        self.assertContains(response, "Test Company")
 
     def test_manufacturer_search_form_without_arg(self):
-        form_data = {
-            "name": "",
-        }
-        form = ManufacturerNameSearchForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        url = reverse("taxi:manufacturer-list")
 
-        manufacturers = Manufacturer.objects.filter(
-            name__icontains=form.cleaned_data["name"]
-        )
+        response = self.client.get(url, {"name": ""})
 
-        self.assertIn(self.manufacturer1, manufacturers)
-        self.assertIn(self.manufacturer2, manufacturers)
-        self.assertIn(self.manufacturer3, manufacturers)
+        self.assertEquals(response.status_code, 200)
+
+        self.assertContains(response, "Manufacture Test")
+        self.assertContains(response, "Another Manufacturer")
+        self.assertContains(response, "Test Company")
 
 
 class TestDriverForms(TestCase):
